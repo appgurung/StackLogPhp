@@ -1,0 +1,21 @@
+{
+    "name": "stacklog/stacklog-io",
+    "description": "Log everything in few clicks",
+    "type": "library",
+    "authors": [
+        {
+            "name": "josh",
+            "email": "josh@stacklog.io"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "stacklogio\\": "src/"
+        }
+    },
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*"
+    }
+}
