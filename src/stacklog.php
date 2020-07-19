@@ -6,50 +6,53 @@ namespace stacklogio;
 
 class StackLog
 {
-    private static $secretKey;
-    private static $bucketId;
+    private $secretKey;
 
-    public static function init($key, $bucket=""){
-        self::$secretKey = $key;
-        self::$bucketId = $bucket;
+    function __construct($key)
+    {
+        $this->init($key);
     }
 
-    public static function info($payload){
-        return self::pushMessage([
+    private function init($key){
+        $this->secretKey = $key;
+    }
+
+    public function info($payload){
+        return $this->pushMessage([
             "message" => $payload["message"],
             "type" => 1
         ]);
     }
 
-    public static function warning($payload){
-        return self::pushMessage([
+    public function warning($payload){
+        return $this->pushMessage([
             "message" => $payload["message"],
             "type" => 2
         ]);
     }
 
-    public static function debug($payload){
-        return self::pushMessage([
+    public function debug($payload){
+        return $this->pushMessage([
             "message" => $payload["message"],
             "type" => 3
         ]);
     }
 
-    public static function error($payload){
-        return self::pushMessage([
+    public function error($payload){
+        return $this->pushMessage([
             "message" => $payload["message"],
             "type" => 4
         ]);
     }
 
-    public static function fatal($payload){
-        return self::pushMessage([
+    public function fatal($payload){
+        return $this->pushMessage([
             "message" => $payload["message"],
             "type" => 5
         ]);
     }
 
-    private static function pushMessage($payload){
+    private function pushMessage($payload){
         $data = json_encode([
             "logMessage" => $payload["message"],
             "logTypeId" => $payload["type"]
@@ -60,11 +63,11 @@ class StackLog
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLINFO_HEADER_OUT, true);
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, data);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_HEADER, [
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data),
-            'Authorization: ' . self::$secretKey,
+            'Authorization: ' . $this->secretKey,
         ]);
 
         $result = curl_exec($curl);
