@@ -7,47 +7,49 @@ namespace stacklogio;
 class StackLog
 {
     private $secretKey;
+    private $bucketId;
 
-    function __construct($key)
+    function __construct($key, $bucketId)
     {
-        $this->init($key);
+        $this->init($key, $bucketId);
     }
 
-    private function init($key){
+    private function init($key, $bucketId){
         $this->secretKey = $key;
+        $this->bucketId = $bucketId;
     }
 
-    public function info($payload){
+    public function info($message){
         return $this->pushMessage([
-            "message" => $payload["message"],
+            "message" => $message,
             "type" => 1
         ]);
     }
 
-    public function warning($payload){
+    public function warning($message){
         return $this->pushMessage([
-            "message" => $payload["message"],
+            "message" => $message,
             "type" => 2
         ]);
     }
 
-    public function debug($payload){
+    public function debug($message){
         return $this->pushMessage([
-            "message" => $payload["message"],
+            "message" => $message,
             "type" => 3
         ]);
     }
 
-    public function error($payload){
+    public function error($message){
         return $this->pushMessage([
-            "message" => $payload["message"],
+            "message" => $message,
             "type" => 4
         ]);
     }
 
-    public function fatal($payload){
+    public function fatal($message){
         return $this->pushMessage([
-            "message" => $payload["message"],
+            "message" => $message,
             "type" => 5
         ]);
     }
@@ -59,16 +61,15 @@ class StackLog
         ]);
 
 
-        $curl = curl_init("http://fcmb-it-l16572:8873/api/v1/sandbox/log/create/7C329EF3-E657-402D-A52F-3533600980DB");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
-        curl_setopt($curl, CURLOPT_POST, true);
+        $curl = curl_init("http://192.168.43.244:8873/api/v1/sandbox/log/create/".$this->bucketId);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_HEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data),
-            'Authorization: ' . $this->secretKey,
-        ]);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
+            'authorization:'.$this->secretKey));
 
         $result = curl_exec($curl);
         curl_close($curl);
