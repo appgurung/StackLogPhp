@@ -3,5 +3,8 @@ require_once "vendor/autoload.php";
 
 use stacklogio\StackLog;
 
-$log = new StackLog("87C8BFFA-1BB9-40BC-9985-167162F800DC","7C329EF3-E657-402D-A52F-3533600980DB");
-echo $log->fatal("");
+$log = new StackLog("n9185kn4h542h7ihyttez24maykbzj","7aibvmlanrfppxzowwbwx5qp2zgzr1");
+//throw new Exception("not found in except");
+
+$data = ["name" => ""];
+echo  $data["friend"];

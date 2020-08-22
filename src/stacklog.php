@@ -8,6 +8,8 @@ class StackLog
 {
     private $secretKey;
     private $bucketId;
+    private $channel;
+    public $allowAllException;
 
     function __construct($key, $bucketId)
     {
@@ -17,6 +19,15 @@ class StackLog
     private function init($key, $bucketId){
         $this->secretKey = $key;
         $this->bucketId = $bucketId;
+        $this->allowAllException = true;
+        $this->channel = "PSatmlzvx";
+
+        set_exception_handler(function ($e){
+            if($this->allowAllException) {
+                //$this->fatal(print_r(debug_backtrace()));
+                $this->error($e->getMessage(). ":" .$e->getTraceAsString());
+            }
+        });
     }
 
     public function info($message){
@@ -57,7 +68,8 @@ class StackLog
     private function pushMessage($payload){
         $data = json_encode([
             "logMessage" => $payload["message"],
-            "logTypeId" => $payload["type"]
+            "logTypeId" => $payload["type"],
+            "stackKey" => $this->channel
         ]);
 
 
