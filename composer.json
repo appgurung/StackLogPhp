@@ -2,6 +2,7 @@
     "name": "stacklog/stacklog-io",
     "description": "Log everything in few clicks",
     "type": "library",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "josh",
