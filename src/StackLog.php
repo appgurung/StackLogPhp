@@ -3,6 +3,8 @@
 
 namespace stacklogio;
 
+use GuzzleHttp\Client;
+
 
 class StackLog
 {
@@ -11,16 +13,16 @@ class StackLog
     private $channel;
     public $allowAllException;
 
-    function __construct($key, $bucketId)
+    function __construct($secretKey, $bucketKey)
     {
-        $this->init($key, $bucketId);
+        $this->init($secretKey, $bucketKey);
     }
 
-    private function init($key, $bucketId){
-        $this->secretKey = $key;
-        $this->bucketId = $bucketId;
+    private function init($secretKey, $bucketKey){
+        $this->secretKey = $secretKey;
+        $this->bucketId = $bucketKey;
         $this->allowAllException = true;
-        $this->channel = "PSatmlzvx";
+        $this->channel = "WY2JUnJaz";
 
         set_exception_handler(function ($e){
             if($this->allowAllException) {
@@ -28,6 +30,8 @@ class StackLog
                 $this->error($e->getMessage(). ":" .$e->getTraceAsString());
             }
         });
+
+
     }
 
     public function info($message){
@@ -66,27 +70,34 @@ class StackLog
     }
 
     private function pushMessage($payload){
-        $data = json_encode([
-            "logMessage" => $payload["message"],
-            "logTypeId" => $payload["type"],
-            "stackKey" => $this->channel
+
+
+        $client = new Client([
+            // Base URI is used with relative requests
+            'base_uri' => "http://www.stacklog.io:8873",
         ]);
 
+        try{
+            $response = $client->request('POST', "/api/v1/sandbox/log/create/" . $this->bucketId, [
+                "headers" => [
+                    "secretKey" => $this->secretKey,
+                    'Accept' => 'application/json; charset=utf-8'
+                ],
+                'json' => [
+                    "logMessage" => $payload["message"],
+                    "logTypeId" => $payload["type"],
+                    "stackKey" => $this->channel
+                ]
+            ]);
+        }
+        catch (\Exception $e){
+            print("Status Code:{$e->getTraceAsString()}");
+        }
 
-        $curl = curl_init("http://192.168.43.244:8873/api/v1/sandbox/log/create/".$this->bucketId);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
-            'authorization:'.$this->secretKey));
 
-        $result = curl_exec($curl);
-        curl_close($curl);
+       //print("Status Code:{$response->getStatusCode()}");
 
-        return $result;
+        return $response->getBody()->getContents();
     }
 
 }
