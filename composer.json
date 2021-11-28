@@ -1,12 +1,13 @@
 {
     "name": "stacklog/stacklog-io",
-    "description": "Log everything in few clicks",
+    "description": "Error Monitoring & Debugging Solution",
     "type": "library",
     "version": "1.0.0",
+    "homepage": "http://www.stacklog.io/",
     "authors": [
         {
-            "name": "josh",
-            "email": "josh@stacklog.io"
+            "name": "olumide Joshua",
+            "email": "olumide@stacklog.io"
         }
     ],
     "minimum-stability": "stable",
